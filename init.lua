@@ -43,17 +43,16 @@ require("lazy").setup({
     {'akinsho/toggleterm.nvim', version = "*", config = true},
     'mfussenegger/nvim-dap',
     { "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"} },
-    'nanozuki/tabby.nvim',
-    'nvim-lualine/lualine.nvim',
     "nvim-lua/plenary.nvim",
+    "rebelot/heirline.nvim",
     {
     'nvim-telescope/telescope.nvim', tag = '0.1.6',
     dependencies = { 'nvim-lua/plenary.nvim' }
     },
     'matsuuu/pinkmare',
     'Yagua/nebulous.nvim',
-    "startup-nvim/startup.nvim",
     "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    "nvim-treesitter/playground",
     requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
 })
 
@@ -76,6 +75,7 @@ require('nvim-treesitter.configs').setup {
     max_file_lines = nil,
   }
 }
+
 require("mason").setup({
     ui = {
         icons = {
@@ -86,11 +86,12 @@ require("mason").setup({
     }
 })
 require("mason-lspconfig").setup()
--- Configure the pyright for python autocomplete
+
 require'lspconfig'.pyright.setup{}
 require('lspconfig')['bashls'].setup{}
 require('lspconfig')['clangd'].setup{}
 require('lspconfig')['lua_ls'].setup{}
+require('lspconfig')['asm_lsp'].setup{}
 require('lsp_lines').setup()
 vim.diagnostic.config({
   virtual_text = true,
@@ -98,9 +99,6 @@ vim.diagnostic.config({
 vim.diagnostic.config({ virtual_lines = { only_current_line = true } })
 
 require('telescope').setup()
--- Treesitter Plugin Setup 
-
-require("themes.nightfox.tabby_colors")
 
 -- LSP Diagnostics Options Setup 
 local sign = function(opts)
@@ -110,8 +108,6 @@ local sign = function(opts)
     numhl = ''
   })
 end
-
-require("tabby_config")
 
 sign({name = 'DiagnosticSignError', text = ''})
 sign({name = 'DiagnosticSignWarn', text = ''})
@@ -185,12 +181,12 @@ cmp.setup({
   },
 })
 
-require("lualine_conf")
 require("dapui").setup()
-require("startup").setup()
 require("toggleterm").setup()
 require("debug")
 local dap = require('dap')
+vim.o.showmode = false
+require("plugins.heirline")
 
 vim.api.nvim_set_keymap('n', '<leader>n', ':NvimTreeToggle<CR>', {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>h', '<cmd>lua vim.lsp.buf.hover()<CR>', { noremap = true, silent = true })
@@ -219,7 +215,6 @@ function _G.set_terminal_keymaps()
   vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
 end
 
--- if you only want these mappings for toggle term use term://*toggleterm#* instead
 vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 
 vim.cmd([[
@@ -228,4 +223,5 @@ vim.cmd([[
 	set expandtab
 	set shiftwidth=4
 	set tabstop=4
+    highlight @register guifg=#52bdff gui=italic 
 ]])
